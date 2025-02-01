@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html style="background-color:beige;">
+    <head>
+        <title>Pill Sorting App</title>
+        <style>
+            /* Adding some general styling */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: beige;
+            }
+
+            h1 {
+                text-align: center;
+            }
+
+            /* Table styling */
+            table {
+                width: 50%; /* Table will take up 50% of the page width */
+                border-collapse: collapse;
+                margin-top: 30px;
+                background-color: antiquewhite;
+                text-align: center; /* Center content inside the table */
+                margin: 0 auto; /* Center the table horizontally */
+                display: none; /* Initially hide the table */
+            }
+
+            th, td {
+                padding: 15px;
+                border: 1px solid #ccc;
+            }
+
+            th {
+                background-color: #f4a261; /* Highlight header */
+            }
+
+            td input {
+                margin: 0; /* Remove default margin around checkbox */
+            }
+
+            .clear-entries {
+                text-align: center;
+                margin-top: 50px;
+            }
+
+            /* Styling for form and buttons */
+            form {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>Welcome to Pill Sorter</h1>
+
+            <!-- Form to add a new pill -->
+            <form action="javascript:void(0);" method="POST" id="pillForm">
+                <label for="textField">Add New Pill:</label><br>
+                <input type="text" id="textField" name="textField" placeholder="Enter Pill Name" required><br><br>
+                <button type="submit">Submit Pill</button>
+            </form>
+
+            <!-- Form to clear entries -->
+            <div class="clear-entries">
+                <form action="javascript:void(0);" method="POST" id="clearForm">
+                    <button type="submit">Clear Entries</button>
+                </form>
+            </div>
+
+            <!-- Table to display days of the week with checkboxes -->
+            <table class="week-table" id="pillTable">
+                <thead>
+                    <tr>
+                        <th>Pill Name</th> <!-- First column for pill names -->
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                        <th>Sunday</th>
+                    </tr>
+                </thead>
+                <tbody id="pillRows"></tbody>
+            </table>
+        </div>
+
+        <script>
+            // Store pill names in an array (up to 3 pills)
+            let pills = [];
+
+            // Handle pill submission
+            document.getElementById('pillForm').addEventListener('submit', function(event) {
+                event.preventDefault();  // Prevent form from refreshing the page
+
+                const pillName = document.getElementById('textField').value.trim();
+
+                // Check if the pill name is not empty and if we have fewer than 3 pills
+                if (pillName && pills.length < 3) {
+                    pills.push(pillName);  // Add the pill to the pills array
+                    document.getElementById('textField').value = '';  // Clear the input field
+
+                    // Update the table with the newly submitted pill
+                    updateTable();
+
+                    // If we have 3 pills, hide the submit button
+                    if (pills.length === 3) {
+                        document.querySelector('button[type="submit"]').disabled = true;
+                    }
+                }
+            });
+
+            // Handle clearing the entries
+            document.getElementById('clearForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                pills = [];  // Clear the pills array
+                document.querySelector('button[type="submit"]').disabled = false;  // Enable the submit button
+
+                // Clear the table and input field
+                document.getElementById('pillRows').innerHTML = '';
+                document.getElementById('pillTable').style.display = 'none';  // Hide the table
+                document.getElementById('textField').value = '';
+            });
+
+            // Function to update the table based on submitted pills
+            function updateTable() {
+                const pillRows = document.getElementById('pillRows');
+                pillRows.innerHTML = '';  // Clear any existing rows
+
+                pills.forEach(function(pill, index) {
+                    const row = document.createElement('tr');
+                    
+                    // Create the first cell for the pill name
+                    const pillCell = document.createElement('td');
+                    pillCell.textContent = pill;  // Set the pill name in the first column
+                    row.appendChild(pillCell);
+
+                    // Create a checkbox for each day of the week for the current pill
+                    for (let i = 0; i < 7; i++) {
+                        const cell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `${pill}-${index}-${i}`;
+                        cell.appendChild(checkbox);
+                        row.appendChild(cell);
+                    }
+
+                    // Add the pill row to the table
+                    pillRows.appendChild(row);
+                });
+
+                // Show the table once pills are added
+                document.getElementById('pillTable').style.display = 'table';
+            }
+        </script>
+    </body>
+</html>
