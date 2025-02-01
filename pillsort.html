@@ -12,7 +12,7 @@
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
-                background-color: beige;
+                background-color: antiquewhite;
             }
 
             h1 {
@@ -24,7 +24,7 @@
                 width: 50%; /* Table will take up 50% of the page width */
                 border-collapse: collapse;
                 margin-top: 30px;
-                background-color: antiquewhite;
+                background-color: aliceblue;
                 text-align: center; /* Center content inside the table */
                 margin: 0 auto; /* Center the table horizontally */
                 display: none; /* Initially hide the table */
@@ -36,7 +36,7 @@
             }
 
             th {
-                background-color: #f4a261; /* Highlight header */
+                background-color: #2a9d90ce; /* Highlight header */
             }
 
             td input {
@@ -52,6 +52,21 @@
             form {
                 text-align: center;
                 margin-bottom: 20px;
+            }
+
+            .export-btn {
+                display: block;
+                margin: 20px auto;
+                padding: 10px 20px;
+                background-color: #2a9d8f;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .export-btn:hover {
+                background-color: #264653;
             }
 
         </style>
@@ -90,6 +105,9 @@
                 </thead>
                 <tbody id="pillRows"></tbody>
             </table>
+
+            <!-- Export button -->
+            <button class="export-btn" id="exportBtn">Export Data</button>
         </div>
 
         <script>
@@ -159,6 +177,41 @@
                 // Show the table once pills are added
                 document.getElementById('pillTable').style.display = 'table';
             }
+
+            // Handle export button click
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                // Create an object to hold the pill data
+                const exportData = pills.map(pill => {
+                    const pillData = {
+                        pillName: pill,
+                        days: []
+                    };
+
+                    // Get checkbox data for each day (true if checked, false if not)
+                    for (let i = 0; i < 7; i++) {
+                        const checkbox = document.getElementById(`${pill}-${pills.indexOf(pill)}-${i}`);
+                        pillData.days.push(checkbox.checked);
+                    }
+
+                    return pillData;
+                });
+
+                // Send the data to the server
+                fetch('/send-to-arduino', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(exportData) // Send the JSON data to the server
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data sent successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending data:', error);
+                });
+            });
         </script>
     </body>
 </html>

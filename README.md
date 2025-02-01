@@ -8,6 +8,6 @@ Creates a browser application to send data to pill sorting robotic mechanism
 
 Program uses:
 HTML
-Flask
 Python
 Arduino
+Node.js

@@ -1,0 +1,26 @@
+{
+  "name": "pill-sorting",
+  "version": "1.0.0",
+  "description": "## Usage",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/connorlabianco/pill-sorting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/connorlabianco/pill-sorting/issues"
+  },
+  "homepage": "https://github.com/connorlabianco/pill-sorting#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "serialport": "^13.0.0"
+  }
+}
