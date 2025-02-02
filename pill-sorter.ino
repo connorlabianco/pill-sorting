@@ -39,16 +39,18 @@ void loop() {
 
       Serial.print("Pill1: ");
       Serial.println(pill1["pillName"].as<String>());
+      Serial.print("days[0] value: ");
+      Serial.println(days[0].as<bool>());  // Print the actual value
 
-      if (days.size() > 0 && days[0].as<bool>()) {
+      // Check if `days[0]` (Monday) is explicitly true
+      if (days.size() > 0 && days[0].as<bool>() == true) {
         Serial.println("Monday: Take Pill - Moving Servo1");
         moveServo(myServo1);
         
-        // Move Servo2 only if needed
         Serial.println("Moving Servo2 for additional process");
         moveServo(myServo2);
       } else {
-        Serial.println("Monday: No pill required");
+        Serial.println("Monday: No pill required - Servo1 will not move.");
       }
     }
   }
