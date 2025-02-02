@@ -104,14 +104,14 @@ void executeServoMovements() {
     if (pill2Days[currentDay]) {
         Serial.println("Moving Servo2 (Pill2)");
         servo2.write(0);
-        delay(50);
+        delay(45);
         servo2.write(90);
     }
     if (pill3Days[currentDay]) {
         Serial.println("Moving Servo3 (Pill3)");
-        servo3.write(0);
-        delay(50);
-        servo3.write(90);
+        servo3.write(10);
+        delay(66);
+        servo3.write(100);
     }
     
     Serial.println("Servo Movements Complete for Today.");
@@ -120,7 +120,7 @@ void executeServoMovements() {
 void resetServos() {
     servo1.write(90);
     servo2.write(90);
-    servo3.write(90);
+    servo3.write(100);
     newServo.write(0); // Reset plate position to start (Monday)
     Serial.println("Servos Reset to 90°, Plate Reset to 0°");
 }
