@@ -23,6 +23,7 @@ let arduinoPort = null;
 
 try {
   arduinoPort = new SerialPort(serialPortPath, { baudRate: 9600 });
+  const parser = arduinoPort.pipe(new SerialPort.parsers.Readline({ delimiter: '\n' })); // Corrected import
 
   arduinoPort.on('open', () => {
     console.log('Serial port opened successfully');
@@ -30,6 +31,11 @@ try {
 
   arduinoPort.on('error', (err) => {
     console.error('Error with serial port:', err.message);
+  });
+
+  // Read and print data from Arduino
+  parser.on('data', (data) => {
+    console.log('Arduino says:', data.trim()); // Trim to clean up line breaks
   });
 
 } catch (error) {
