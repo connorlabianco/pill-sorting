@@ -40,9 +40,17 @@ try {
 app.post('/send-to-arduino', (req, res) => {
   if (arduinoPort && arduinoPort.isOpen) {
     const pillData = req.body;
-    console.log('Sending data to Arduino:', pillData);
 
-    arduinoPort.write(JSON.stringify(pillData) + '\n', (err) => {
+    // Ensure a consistent structure with pill1, pill2, and pill3
+    const formattedData = {
+      pill1: pillData[0] ? pillData[0].days : [false, false, false, false, false, false, false],
+      pill2: pillData[1] ? pillData[1].days : [false, false, false, false, false, false, false],
+      pill3: pillData[2] ? pillData[2].days : [false, false, false, false, false, false, false]
+    };
+
+    console.log('Sending formatted data to Arduino:', formattedData);
+
+    arduinoPort.write(JSON.stringify(formattedData) + '\n', (err) => {
       if (err) {
         console.log('Error sending data to Arduino:', err);
         return res.status(500).send({ success: false, message: 'Error sending data to Arduino' });

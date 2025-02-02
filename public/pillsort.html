@@ -3,57 +3,28 @@
     <head>
         <title>Pill Sorting App</title>
         <style>
-            /* Adding some general styling */
             body {
                 font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
                 background-color: antiquewhite;
             }
-
-            h1 {
-                text-align: center;
-            }
-
-            /* Table styling */
+            h1 { text-align: center; }
             table {
-                width: 50%; /* Table will take up 50% of the page width */
+                width: 50%;
                 border-collapse: collapse;
                 margin-top: 30px;
                 background-color: aliceblue;
-                text-align: center; /* Center content inside the table */
-                margin: 0 auto; /* Center the table horizontally */
-                display: none; /* Initially hide the table */
-            }
-
-            th, td {
-                padding: 15px;
-                border: 1px solid #ccc;
-            }
-
-            th {
-                background-color: #2a9d90ce; /* Highlight header */
-            }
-
-            td input {
-                margin: 0; /* Remove default margin around checkbox */
-            }
-
-            .clear-entries {
                 text-align: center;
-                margin-top: 50px;
+                margin: 0 auto;
+                display: none;
             }
-
-            /* Styling for form and buttons */
-            form {
-                text-align: center;
-                margin-bottom: 20px;
-            }
-
+            th, td { padding: 15px; border: 1px solid #ccc; }
+            th { background-color: #2a9d90ce; }
+            td input { margin: 0; }
+            form { text-align: center; margin-bottom: 20px; }
             .export-btn {
                 display: block;
                 margin: 20px auto;
@@ -64,154 +35,114 @@
                 border-radius: 5px;
                 cursor: pointer;
             }
-
-            .export-btn:hover {
-                background-color: #264653;
-            }
-
+            .export-btn:hover { background-color: #264653; }
         </style>
     </head>
     <body>
         <div>
             <h1>Welcome to Pill Sorter</h1>
-
-            <!-- Form to add a new pill -->
-            <form action="javascript:void(0);" method="POST" id="pillForm">
-                <label for="textField">Add New Pill:</label><br>
-                <input type="text" id="textField" name="textField" placeholder="Enter Pill Name" required><br><br>
+            <form id="pillForm">
+                <label for="textField">Add Custom Name for Pills:</label><br>
+                <input type="text" id="textField" placeholder="Enter Pill Name" required><br><br>
                 <button type="submit">Submit Pill</button>
             </form>
-
-            <!-- Form to clear entries -->
-            <div class="clear-entries">
-                <form action="javascript:void(0);" method="POST" id="clearForm">
-                    <button type="submit">Clear Entries</button>
-                </form>
-            </div>
-
-            <!-- Table to display days of the week with checkboxes -->
-            <table class="week-table" id="pillTable">
+            <form id="clearForm">
+                <button type="submit">Clear Entries</button>
+            </form>
+            <table id="pillTable">
                 <thead>
                     <tr>
-                        <th>Pill Name</th> <!-- First column for pill names -->
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
-                        <th>Saturday</th>
-                        <th>Sunday</th>
+                        <th>Pill Label</th>
+                        <th>Pill Name</th>
+                        <th>Monday</th><th>Tuesday</th><th>Wednesday</th>
+                        <th>Thursday</th><th>Friday</th><th>Saturday</th><th>Sunday</th>
                     </tr>
                 </thead>
                 <tbody id="pillRows"></tbody>
             </table>
-
-            <!-- Export button -->
             <button class="export-btn" id="exportBtn">Export Data</button>
         </div>
-
         <script>
-            // Store pill names in an array (up to 3 pills)
-            let pills = [];
-
-            // Handle pill submission
+            let pills = [
+                { id: "pill1", name: "", days: [false, false, false, false, false, false, false] },
+                { id: "pill2", name: "", days: [false, false, false, false, false, false, false] },
+                { id: "pill3", name: "", days: [false, false, false, false, false, false, false] }
+            ];
+            
+            function loadPills() {
+                fetch('/get-pills')
+                    .then(response => response.json())
+                    .then(data => {
+                        pills = data;
+                        updateTable();
+                    })
+                    .catch(error => console.error('Error loading pill data:', error));
+            }
+            
             document.getElementById('pillForm').addEventListener('submit', function(event) {
-                event.preventDefault();  // Prevent form from refreshing the page
-
+                event.preventDefault();
                 const pillName = document.getElementById('textField').value.trim();
-
-                // Check if the pill name is not empty and if we have fewer than 3 pills
-                if (pillName && pills.length < 3) {
-                    pills.push(pillName);  // Add the pill to the pills array
-                    document.getElementById('textField').value = '';  // Clear the input field
-
-                    // Update the table with the newly submitted pill
+                let pillSlot = pills.find(p => p.name === "");
+                
+                if (pillName && pillSlot) {
+                    pillSlot.name = pillName;
+                    document.getElementById('textField').value = '';
                     updateTable();
-
-                    // If we have 3 pills, hide the submit button
-                    if (pills.length === 3) {
-                        document.querySelector('button[type="submit"]').disabled = true;
-                    }
+                }
+                if (!pills.find(p => p.name === "")) {
+                    document.querySelector('button[type="submit"]').disabled = true;
                 }
             });
-
-            // Handle clearing the entries
+            
             document.getElementById('clearForm').addEventListener('submit', function(event) {
                 event.preventDefault();
-                pills = [];  // Clear the pills array
-                document.querySelector('button[type="submit"]').disabled = false;  // Enable the submit button
-
-                // Clear the table and input field
-                document.getElementById('pillRows').innerHTML = '';
-                document.getElementById('pillTable').style.display = 'none';  // Hide the table
-                document.getElementById('textField').value = '';
+                pills.forEach(p => { p.name = ""; p.days.fill(false); });
+                document.querySelector('button[type="submit"]').disabled = false;
+                updateTable();
             });
-
-            // Function to update the table based on submitted pills
+            
             function updateTable() {
                 const pillRows = document.getElementById('pillRows');
-                pillRows.innerHTML = '';  // Clear any existing rows
-
-                pills.forEach(function(pill, index) {
+                pillRows.innerHTML = '';
+                pills.forEach((pill, index) => {
+                    if (pill.name === "") return;
                     const row = document.createElement('tr');
+                    const labelCell = document.createElement('td');
+                    labelCell.textContent = pill.id;
+                    row.appendChild(labelCell);
                     
-                    // Create the first cell for the pill name
                     const pillCell = document.createElement('td');
-                    pillCell.textContent = pill;  // Set the pill name in the first column
+                    pillCell.textContent = pill.name;
                     row.appendChild(pillCell);
-
-                    // Create a checkbox for each day of the week for the current pill
+                    
                     for (let i = 0; i < 7; i++) {
                         const cell = document.createElement('td');
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
-                        checkbox.id = `${pill}-${index}-${i}`;
+                        checkbox.id = `pill-${index}-day-${i}`;
+                        checkbox.checked = pill.days[i];
+                        checkbox.addEventListener('change', function() {
+                            pill.days[i] = this.checked;
+                        });
                         cell.appendChild(checkbox);
                         row.appendChild(cell);
                     }
-
-                    // Add the pill row to the table
                     pillRows.appendChild(row);
                 });
-
-                // Show the table once pills are added
-                document.getElementById('pillTable').style.display = 'table';
+                document.getElementById('pillTable').style.display = pills.some(p => p.name !== "") ? 'table' : 'none';
             }
-
-            // Handle export button click
+            
             document.getElementById('exportBtn').addEventListener('click', function() {
-                // Create an object to hold the pill data
-                const exportData = pills.map(pill => {
-                    const pillData = {
-                        pillName: pill,
-                        days: []
-                    };
-
-                    // Get checkbox data for each day (true if checked, false if not)
-                    for (let i = 0; i < 7; i++) {
-                        const checkbox = document.getElementById(`${pill}-${pills.indexOf(pill)}-${i}`);
-                        pillData.days.push(checkbox.checked);
-                    }
-
-                    return pillData;
-                });
-
-                // Send the data to the server
                 fetch('/send-to-arduino', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(exportData) // Send the JSON data to the server
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Data sent successfully:', data);
-                })
-                .catch(error => {
-                    console.error('Error sending data:', error);
-                });
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pills)
+                }).then(response => response.json())
+                  .then(data => console.log('Data sent:', data))
+                  .catch(error => console.error('Error sending data:', error));
             });
+            
+            window.onload = loadPills;
         </script>
     </body>
 </html>
