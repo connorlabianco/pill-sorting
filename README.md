@@ -26,16 +26,16 @@ Before running the project, ensure you have the following installed:
 
 ## macOS Setup (using Homebrew)  
 1. **Install Homebrew** (if you don’t have it):  
-   [phb] `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+    `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
 2. **Install Node.js**:  
-   [phb] `brew install node`
+    `brew install node`
 
 3. **Install C++ Compiler**:  
-   [phb] `brew install gcc`
+    `brew install gcc`
 
 4. **Install VSCode** (optional):  
-   [phb] `brew install --cask visual-studio-code`
+   `brew install --cask visual-studio-code`
 
 5. **Install Arduino IDE**: Download from the [official website](https://www.arduino.cc/en/software).  
 
@@ -66,7 +66,7 @@ Before running the project, ensure you have the following installed:
 2. **Run the Node.js Server**:  
    - Open the terminal (macOS) or command prompt (Windows).  
    - Navigate to the project directory and run:  
-     [phb] `node server.js`  
+      `node server.js`  
    This starts the Node.js server, enabling communication between the front-end and the Arduino.
 
 ## Using the System  
